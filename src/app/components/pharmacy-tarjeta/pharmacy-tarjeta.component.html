@@ -1,0 +1,23 @@
+<div class="alert alert-secondary animated fadeIn" role="alert" *ngIf="farmacias?.length < 1 && isSubmit">
+    <h4 class="alert-heading">Búsqueda no encontrada</h4>
+    <p>
+        <strong class="alert-heading"> Su búsqueda </strong> no arrojó ningún resultado.<br>
+        No se encontraron farmacias de turno que contengan los filtros indicados.
+    </p>
+</div>
+
+<div class="row row-cols-1 row-cols-md-3 mt-5 animated fadeIn" *ngIf="farmacias.length > 0">
+    <div class="col mb-4"  *ngFor="let farmacia of farmacias,index as i">
+        <div class="card border-success h-100" >
+            <div class="card-body text-success">
+              <ul class="list-group list-group-flush">
+                <li class="list-group-item"><b>Nombre del Local:</b>  {{farmacia.local_nombre}}</li>
+                <li class="list-group-item"><b>Direccion:</b>  {{farmacia.local_direccion}}</li>
+                <li class="list-group-item"><b>Teléfono:</b> {{farmacia.local_telefono}} </li>
+              </ul>
+            </div>
+            <app-map [latitud]="farmacia.local_lat"  [longitud]="farmacia.local_lng" class="d-block card-img-bottom"></app-map>
+        </div>
+    </div>
+    
+</div>

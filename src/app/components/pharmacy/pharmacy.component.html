@@ -1,0 +1,46 @@
+<h2 class="m-3">Farmacias de turnos</h2>
+<hr>
+<form  (ngSubmit)="buscarFarmacias(forma)" #forma="ngForm">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label for="inputComuna">Comuna: </label>
+            <ng-select [items]="optionsCommunes" 
+                       bindLabel="name" 
+                       bindValue="name"
+                       name="inputComuna"
+                       [ngModel]="farmaciaTurno.comuna"                       
+                       required
+                       #inputComuna="ngModel">
+            </ng-select>
+            <small class="text-danger form-text"           
+               *ngIf="inputComuna.invalid && inputComuna.touched">
+               El campo comuna es obligatorio
+            </small>
+        </div>
+        <div class="form-group col-md-6">
+            <label for="inputNombreLocal">Nombre Local: </label>
+            <input class="form-control"
+            type="text"
+            name="inputNombreLocal"
+            placeholder="Nombre"
+            [ngModel]="farmaciaTurno.nombrelocal"
+            [class.is-invalid] = "inputNombreLocal.invalid && inputNombreLocal.touched"            
+            required
+            minlength="3"
+            #inputNombreLocal="ngModel">
+            <small class="text-danger form-text"           
+                   *ngIf="inputNombreLocal.invalid && inputNombreLocal.touched">
+                   Ingrese al menos 3 caracteres
+           </small>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-12">
+            <button type="submit" class="btn btn-primary mb-2 btn-large"  style="width: 100px;" [disabled]="loading">Buscar</button>
+        </div>
+    </div>
+   
+</form>
+
+<mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
+<app-pharmacy-tarjeta [farmacias]="farmacias" *ngIf="!loading" [isSubmit]="isSubmit" ></app-pharmacy-tarjeta>

@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: 'Static website hosting with S3 and CloudFront'
+Parameters:
+  pathS3:
+    Type: String
+    MinLength: '4'
+    MaxLength: '300'
+    Default: latest/consorcio-modulo-farmacia.zip
+  levelLog:
+    Type: String
+    MinLength: '3'
+    MaxLength: '10'
+    Default: INFO
+Mappings:
+  RegionMap:
+    us-east-1:
+      bucket: name
+      stageName: dev
+      BucketName: bucketName
+    us-west-1:
+      bucket: name
+      stageName: prod
+      BucketName: bucketName
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      AccessControl: PublicRead
+      # Need to define a static BucketName due to a circular dependency with the AWS::SNS::TopicPolicy
+      BucketName: !FindInMap
+        - RegionMap
+        - !Ref 'AWS::Region'
+        - BucketName
+      MetricsConfigurations:
+        - Id: EntireBucket
+      LoggingConfiguration:
+        DestinationBucketName: !Ref S3BucketLogs
+        LogFilePrefix: 'cdn/'
+      WebsiteConfiguration:
+        ErrorDocument: 'index.html'
+        IndexDocument: 'index.html'
+  S3BucketLogs:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Delete
+    Properties:
+      AccessControl: LogDeliveryWrite
+      BucketName: !Sub '${AWS::StackName}-logs'
+  S3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref S3Bucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: 'Allow'
+            Action: 's3:GetObject'
+            Principal: '*'
+            Resource: !Sub '${S3Bucket.Arn}/*'
+Outputs:
+  BucketName:
+    Description: 'S3 Bucket Name'
+    Value: !Ref S3Bucket
